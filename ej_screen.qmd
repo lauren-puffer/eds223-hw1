@@ -1,0 +1,35 @@
+---
+title: "Homework 1 - EDS 223"
+author: "Lauren Puffer"
+format: html
+editor: visual
+embed-resources: true
+code-fold: show
+execute: 
+  warning: false
+  message: false
+toc: TRUE
+theme: journal
+---
+
+## Introduction
+
+## Load Packages 
+
+For this analysis, we will be using the 'tmap' package to generate maps with data pulled from the 'Environmental Justice Screening and Mapping Tool.' We will also be using 'here' and 'tidyverse' for file management and workflow optimization.
+
+```{r}
+library(tmap)
+library(here)
+library(tidyverse)
+library(sf) # allows us to bring in shape files for mapping
+library(stars) # for raster and vector data
+```
+
+## Bring in spatial data
+
+```{r}
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
