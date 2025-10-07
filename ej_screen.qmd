@@ -14,7 +14,7 @@ theme: journal
 
 ## Introduction
 
-The basis of this analysis is to better understand...
+The purpose of this analysis is to get a visual understanding of the relationship between air pollution and socioeconomic status in San Joaquin County in California.
 
 ## Load Packages
 
@@ -30,36 +30,32 @@ library(tigris) # for bringing in map of Arizona and counties
 library(viridisLite) # colorblind friendly palettes
 ```
 
-## Bring in EJ Screen data
+## Shape files & EJ Screen data
+
+In order to properly display our data, we must first bring in the shape files of the areas we wish to look at.
 
 ```{r}
 # make sure you are downloading shape files from 'tigris'
 options(tigris_class = "sf")
 
-# bring in shape files of US states
-us_states <- states(class = "sf")
-
-# get the geopackage of Arizona
-ca_shape <- us_states[us_states$STUSPS == "CA", ]
-
-# bring in shape file of Arizona counties 
+# bring in shape file of California counties 
 ca_counties <- counties(state = "CA")
 
-# bring in census tracts for Arizona
+# bring in census tracts for California
 ca_tracts <- tracts(state = "CA")
 
-# bring in just Maricopa county
+# bring in just San Joaquin county
 sanjoaquin_shape <- ca_counties |>
   filter(NAME == "San Joaquin")
 
 # read in geodatabase of EJScreen data at the Census Block Group level
 ejscreen <- st_read(here::here("data", "ejscreen","EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb")) 
 
-# filter for data from Arizona
+# filter for data from California
 california <- ejscreen |>
   filter(ST_ABBREV == "CA") 
 
-# get data from Maricopa county
+# filter data from San Joaquin county
 sanjoaquin <- california |>
   filter(CNTY_NAME %in% c("San Joaquin County"))
 
@@ -67,7 +63,7 @@ sanjoaquin <- california |>
 
 ## Map of Demographic Index & PM 2.5
 
-In order to explore the relationship between demographic index (an aggregated score of poverty and minority status) and PM 2.5.
+In order to explore the relationship between demographic index (an aggregated score of poverty and minority status) and PM 2.5. The demographic index combines the minority and poverty statues of a population to create one index.
 
 ```{r}
 # make maps static 
@@ -102,3 +98,7 @@ tm_scalebar(position = c("right", "bottom")) +
 # arrange side-by-side
 tmap_arrange(sanjoaquin_demo, sanjoaquin_pm25, ncol = 2)
 ```
+
+## Discussion 
+
+The following maps can be compared to show a possible correlation between socioeconomic status (demographic index) and air pollution from PM 2.5. PM 2.5 concentrations seem to be focused in the southern end of San Joaquin County.
