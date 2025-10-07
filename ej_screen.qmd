@@ -40,63 +40,65 @@ options(tigris_class = "sf")
 us_states <- states(class = "sf")
 
 # get the geopackage of Arizona
-az_shape <- us_states[us_states$STUSPS == "AZ", ]
+ca_shape <- us_states[us_states$STUSPS == "CA", ]
 
 # bring in shape file of Arizona counties 
-az_counties <- counties(state = "AZ")
+ca_counties <- counties(state = "CA")
 
 # bring in census tracts for Arizona
-az_tracts <- tracts(state = "AZ")
+ca_tracts <- tracts(state = "CA")
 
 # bring in just Maricopa county
-maricopa_shape <- az_counties |>
-  filter(NAME == "Maricopa")
+sanjoaquin_shape <- ca_counties |>
+  filter(NAME == "San Joaquin")
 
 # read in geodatabase of EJScreen data at the Census Block Group level
 ejscreen <- st_read(here::here("data", "ejscreen","EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb")) 
 
 # filter for data from Arizona
-arizona <- ejscreen |>
-  filter(ST_ABBREV == "AZ") 
+california <- ejscreen |>
+  filter(ST_ABBREV == "CA") 
 
 # get data from Maricopa county
-maricopa <- arizona |>
-  filter(CNTY_NAME %in% c("Maricopa County"))
+sanjoaquin <- california |>
+  filter(CNTY_NAME %in% c("San Joaquin County"))
 
 ```
 
-## Make maps
+## Map of Demographic Index & PM 2.5
 
-In order to explore the relationship between
+In order to explore the relationship between demographic index (an aggregated score of poverty and minority status) and PM 2.5.
 
 ```{r}
-    # Plot Arizona
-    tm_shape(az_shape) +
-      tm_polygons(col = "lightblue", border.col = "black") + # Optional: set color and border
-    tm_shape(az_tracts)+
-      tm_borders()+
-    tm_shape(az_counties)+
-      tm_borders(col = "red")+
-      tm_layout(title = "Map of Arizona")
-    
-# make a map of % in poverty in Maricopa county
-    tm_shape(maricopa_shape) +
+# make maps static 
+tmap_mode("plot")
+
+# make a map of Demographic Index in San Joaquin County
+sanjoaquin_demo <- tm_shape(sanjoaquin_shape, bbox = sanjoaquin) +
       tm_polygons()+
-    tm_shape(maricopa)+
+    tm_shape(sanjoaquin)+
       tm_polygons(fill = "B_DEMOGIDX_2",
                   lwd = 0.5,
                   fill.scale = tm_scale(values = "viridis"),
-                  title = "Low Income (%)")+
-      tm_title("Maricopa County")
+                  fill.legend = tm_legend(title = "Demographic Index"))+
+    tm_compass(type = "arrow",
+               position = c("left", "top"),
+               size = 2) +
+    tm_scalebar()+
+      tm_title("San Joaquin County")
     
-# make a map of cancer from toxic air pollutants in Maricopa county
-    tm_shape(maricopa_shape) +
-      tm_polygons()+
-    tm_shape(maricopa)+
-      tm_polygons(fill = "P_PTRAF",
-                  lwd = 0.5,
-                  fill.scale = tm_scale(values = "viridis"),
-                  title = "Cancer from Toxic Air Pollutants")+
-      tm_title("Maricopa County")
 
+# make a map of PM 25 in San Joaquin County
+sanjoaquin_pm25 <- tm_shape(sanjoaquin_shape, bbox = sanjoaquin) +
+      tm_polygons()+
+    tm_shape(sanjoaquin)+
+      tm_polygons(fill = "PM25",
+                  lwd = 0.5,
+                  fill.scale = tm_scale(values = "magma"),
+                  fill.legend = tm_legend(title = "PM 2.5"))+
+tm_scalebar(position = c("right", "bottom")) +
+        tm_title(" ")
+
+# arrange side-by-side
+tmap_arrange(sanjoaquin_demo, sanjoaquin_pm25, ncol = 2)
 ```
