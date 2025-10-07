@@ -83,7 +83,7 @@ In order to explore the relationship between
     tm_shape(maricopa_shape) +
       tm_polygons()+
     tm_shape(maricopa)+
-      tm_polygons(fill = "LOWINCPCT",
+      tm_polygons(fill = "B_DEMOGIDX_2",
                   lwd = 0.5,
                   fill.scale = tm_scale(values = "viridis"),
                   title = "Low Income (%)")+
@@ -93,7 +93,7 @@ In order to explore the relationship between
     tm_shape(maricopa_shape) +
       tm_polygons()+
     tm_shape(maricopa)+
-      tm_polygons(fill = "CANCER",
+      tm_polygons(fill = "P_PTRAF",
                   lwd = 0.5,
                   fill.scale = tm_scale(values = "viridis"),
                   title = "Cancer from Toxic Air Pollutants")+
