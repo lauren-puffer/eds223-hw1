@@ -4,6 +4,7 @@ author: "Lauren Puffer"
 format: html
 editor: visual
 embed-resources: true
+page-loading: false
 code-fold: show
 execute: 
   warning: false
@@ -32,17 +33,17 @@ library(viridisLite) # colorblind friendly palettes
 
 ## Shape files & EJ Screen data
 
-In order to properly display our data, we must first bring in the shape files of the areas we wish to look at.
+In order to properly display our data, we must first bring in the shape files of the areas we wish to look at, as well as the data itself. For the scale of this project, we will use the tigris package to obtain our shape file of San Joaquin county. Provided is the code to scale this analysis up to the state level, or down to the census tract. We will be constructing our maps at the county level.
 
 ```{r}
 # make sure you are downloading shape files from 'tigris'
 options(tigris_class = "sf")
 
 # bring in shape file of California counties 
-ca_counties <- counties(state = "CA")
+ca_counties <- counties(state = "CA", progress_bar = FALSE)
 
 # bring in census tracts for California
-ca_tracts <- tracts(state = "CA")
+ca_tracts <- tracts(state = "CA", progress_bar = FALSE)
 
 # bring in just San Joaquin county
 sanjoaquin_shape <- ca_counties |>
@@ -61,9 +62,9 @@ sanjoaquin <- california |>
 
 ```
 
-## Map of Demographic Index & PM 2.5
+## Visualize data
 
-In order to explore the relationship between demographic index (an aggregated score of poverty and minority status) and PM 2.5. The demographic index combines the minority and poverty statues of a population to create one index.
+In order to explore the relationship between demographic index (an aggregated score of percent low income and percent people of color) and PM 2.5 in average micrograms per liter per year. People of color were considered to be anyone who listed a race other than white in the census. Low income households included anyone who was less than or equal to the federal poverty level.
 
 ```{r}
 # make maps static 
@@ -91,7 +92,7 @@ sanjoaquin_pm25 <- tm_shape(sanjoaquin_shape, bbox = sanjoaquin) +
       tm_polygons(fill = "PM25",
                   lwd = 0.5,
                   fill.scale = tm_scale(values = "magma"),
-                  fill.legend = tm_legend(title = "PM 2.5"))+
+                  fill.legend = tm_legend(title = "Mean PM 2.5 (micrograms per liter)"))+
 tm_scalebar(position = c("right", "bottom")) +
         tm_title(" ")
 
@@ -99,6 +100,18 @@ tm_scalebar(position = c("right", "bottom")) +
 tmap_arrange(sanjoaquin_demo, sanjoaquin_pm25, ncol = 2)
 ```
 
-## Discussion 
+## Map interpretation
 
-The following maps can be compared to show a possible correlation between socioeconomic status (demographic index) and air pollution from PM 2.5. PM 2.5 concentrations seem to be focused in the southern end of San Joaquin County.
+The following maps can be compared to show a possible correlation between socioeconomic status (demographic index) and air pollution from PM 2.5. PM 2.5 concentrations appear to be focused in the southern end of San Joaquin County. Similarly, those with higher demographic scores seem to reside in the central and southern parts of the county. While there is not a direct overlap in the spatial distribution of the extreme values in these two maps, we can begin to see a trend emerge in the broader context of the area. From Stockton to Manteca, down to Ripon, there is an uptick in PM 2.5 concentrations compared to the surrounding areas. Heavy traffic from Highway 99, combined with a strong agricultural presence and significant industrial activity, may all contribute to the elevated levels of PM 2.5 in this region.
+
+When we consider that many residents in these areas have middle to high demographic index scores, we can begin to examine the relationship between air pollution and lower socioeconomic status. This is important to consider when evaluating property costs, the location of housing, and the environmental hazards that may surround it. People of lower socioeconomic status tend to live in more affordable areas, and more affordable areas are often associated with greater environmental risks. This is, in part, because the housing market does not account for environmental discrepancies, forcing those of lower socioeconomic status to tolerate worse environmental conditions and greater health hazards.
+
+## Data citation
+
+U.S. Environmental Protection Agency (EPA), 2023. EJScreen Technical Documentation. 
+
+Link to EJ Screen: <https://pedp-ejscreen.azurewebsites.net/>
+
+Particulate Matter (PM) 2.5 and Ozone values are derived from 2019 source data from EPA’s Office of Air Quality Planning and Standards (OAQPS), Non-attainment areas (NAA). 
+
+Demographic Index data comes from [US Census American Community Survey Data via FTP](https://www.census.gov/programs-surveys/acs/data/data-via-ftp.html)
